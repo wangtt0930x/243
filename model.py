@@ -2,17 +2,22 @@ import pandas as pd
 import numpy as np
 import joblib  # or pickle
 from sklearn.ensemble import RandomForestRegressor
+import urllib.request
+import tempfile
 
-# Load your housing dataset
-DATA_PATH = "Module2_final_data.csv"
-MODEL_PATH = "final_rf_model.pkl"  # Make sure to save your trained model here
+DATA_URL = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
+MODEL_URL = "https://www.dropbox.com/scl/fi/ndil67djnbu4r6zhf7i43/final_rf_model.pkl?rlkey=5wdq26hkfaq5cqfh6bcxxc9o5&dl=1"
 
 def load_data():
-    df = pd.read_csv(DATA_PATH)
+    df = pd.read_csv(DATA_URL)
     return df
 
 def load_model():
-    return joblib.load(MODEL_PATH)
+    # Download model to a temporary file and load it
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        urllib.request.urlretrieve(MODEL_URL, tmp.name)
+        model = joblib.load(tmp.name)
+    return model
 
 def apply_filters(df, filters):
     for key, value in filters.items():
