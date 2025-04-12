@@ -47,10 +47,18 @@ def recommend_top_10(filtered_df, model):
 
     X_filtered = filtered_df.drop(columns=['RENT_PRICE'])
     y_actual = filtered_df['RENT_PRICE']
-    y_pred = model.predict(X_filtered)
 
+    # Clean: remove inf and NaN values
+    X_filtered = X_filtered.replace([np.inf, -np.inf], np.nan)
+    X_filtered = X_filtered.dropna()
+    y_actual = y_actual.loc[X_filtered.index]
+
+    if X_filtered.empty:
+        return pd.DataFrame(), []
+
+    y_pred = model.predict(X_filtered)
     ratio = y_pred / y_actual
-    top_idx = np.argsort(ratio)[-10:][::-1]  # Top 10 in descending order
+    top_idx = np.argsort(ratio)[-10:][::-1]
     top_df = filtered_df.iloc[top_idx].copy()
     top_df["PREDICTED_RENT"] = y_pred[top_idx]
     top_df["PREDICTED/ACTUAL_RATIO"] = ratio[top_idx]
