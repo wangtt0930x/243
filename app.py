@@ -11,7 +11,8 @@ st.markdown("Filter to find the top 10 underpriced rental listings!")
 # --- Collect Filter Inputs from User ---
 filters = {}
 
-filters["ZIPCODE"] = st.selectbox("Zip Code", options=[None, 90001, 90002, 90003, 94110, 94111])  # Replace with real zipcodes
+filters["ZIPCODE"] = st.selectbox("Zip Code", options=[None, 93955, 96080, 90755, 95010, 95945, 95949, 92315, 95453, 90040,
+       90023, 96007, 96094, 92225, 94564, 93505])  # Replace with real zipcodes
 filters["SQFT"] = st.slider("Square Footage Range", min_value=300, max_value=3000, value=(500, 1500))
 filters["BEDROOMS"] = st.selectbox("Number of Bedrooms", options=[None, 1, 2, 3, 4])
 filters["BATHROOMS"] = st.selectbox("Number of Bathrooms", options=[None, 1, 2, 3])
@@ -28,8 +29,23 @@ filters["RENT_PRICE"] = st.slider("Rent Price Range", min_value=500, max_value=8
 if st.button("🔍 Show Top 10 Listings"):
     with st.spinner("Finding the best deals..."):
         results_df = get_recommendations(filters)[0]  # just get DataFrame
+
         if results_df.empty:
             st.warning("No listings match your criteria. Try adjusting filters.")
         else:
-            st.success(f"Top {len(results_df)} recommended listings:")
-            st.dataframe(results_df.style.format({"PREDICTED/ACTUAL_RATIO": "{:.2f}", "PREDICTED_RENT": "${:.0f}"}))
+            # Pick only the important columns (rename if needed)
+            display_df = results_df[[
+                "zip", "BEDS", "BATHS", "SQFT", "lat", "lng", "RENT_PRICE", "PREDICTED_RENT", "PREDICTED/ACTUAL_RATIO"
+            ]].copy()
+
+            # Format BEDS and BATHS as integers
+            display_df["BEDS"] = display_df["BEDS"].astype(int)
+            display_df["BATHS"] = display_df["BATHS"].astype(int)
+
+            # Format final output
+            st.success(f"Top {len(display_df)} recommended listings:")
+            st.dataframe(display_df.style.format({
+                "RENT_PRICE": "${:.0f}",
+                "PREDICTED_RENT": "${:.0f}",
+                "PREDICTED/ACTUAL_RATIO": "{:.2f}"
+            }))
