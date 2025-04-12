@@ -4,12 +4,16 @@ import pickle
 from sklearn.ensemble import RandomForestRegressor
 import urllib.request
 import tempfile
+import requests
+import io
 
 DATA_URL = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
 MODEL_URL = "https://www.dropbox.com/scl/fi/ndil67djnbu4r6zhf7i43/final_rf_model.pkl?rlkey=5wdq26hkfaq5cqfh6bcxxc9o5&dl=1"
 
 def load_data():
-    df = pd.read_csv(DATA_URL)
+    response = requests.get(DATA_URL)
+    response.raise_for_status()
+    df = pd.read_csv(io.StringIO(response.text))
     return df
 
 def load_model():
