@@ -10,10 +10,18 @@ import io
 DATA_URL = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
 MODEL_URL = "https://www.dropbox.com/scl/fi/ndil67djnbu4r6zhf7i43/final_rf_model.pkl?rlkey=5wdq26hkfaq5cqfh6bcxxc9o5&dl=1"
 
+from io import StringIO
+
 def load_data():
-    response = requests.get(DATA_URL)
-    response.raise_for_status()
-    df = pd.read_csv(io.StringIO(response.text))
+    url = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
+    
+    # Fetch content safely using requests
+    response = requests.get(url)
+    response.raise_for_status()  # Raise error if download failed
+    
+    # Convert content to a pandas DataFrame
+    csv_data = StringIO(response.text)
+    df = pd.read_csv(csv_data)
     return df
 
 def load_model():
