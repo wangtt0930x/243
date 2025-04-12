@@ -7,7 +7,7 @@ import tempfile
 from io import StringIO
 import urllib.request
 
-DATA_URL = "https://www.dropbox.com/scl/fi/r1l48ib8ckzzrfg91irmx/df1000.csv?rlkey=a9m2362vtnu9f566a0y0dzuy1&st=yffpk167&dl=0"
+DATA_URL = "https://www.dropbox.com/scl/fi/r1l48ib8ckzzrfg91irmx/df1000.csv?rlkey=a9m2362vtnu9f566a0y0dzuy1&st=yffpk167&dl=1"
 MODEL_URL = "https://www.dropbox.com/scl/fi/ndil67djnbu4r6zhf7i43/final_rf_model.pkl?rlkey=5wdq26hkfaq5cqfh6bcxxc9o5&dl=1"
 
 @st.cache_data
