@@ -1,32 +1,24 @@
+import streamlit as st  # ← needed for caching
 import pandas as pd
 import numpy as np
-import pickle
-from sklearn.ensemble import RandomForestRegressor
-import urllib.request
-import tempfile
 import requests
-import io
 import joblib
+import tempfile
+from io import StringIO
+import urllib.request
 
 DATA_URL = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
 MODEL_URL = "https://www.dropbox.com/scl/fi/ndil67djnbu4r6zhf7i43/final_rf_model.pkl?rlkey=5wdq26hkfaq5cqfh6bcxxc9o5&dl=1"
 
-from io import StringIO
-
+@st.cache_data
 def load_data():
-    url = "https://www.dropbox.com/scl/fi/lwqa9zeesnn7wfdqi4jq4/Module2_final_data-1.csv?rlkey=andu9myoza0oa7u22pwz3v2n1&dl=1"
-    
-    # Fetch content safely using requests
-    response = requests.get(url)
-    response.raise_for_status()  # Raise error if download failed
-    
-    # Convert content to a pandas DataFrame
-    csv_data = StringIO(response.text)
-    df = pd.read_csv(csv_data)
+    response = requests.get(DATA_URL)
+    response.raise_for_status()
+    df = pd.read_csv(StringIO(response.text))
     return df
 
+@st.cache_resource
 def load_model():
-    # Download model to a temporary file and load it
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
         urllib.request.urlretrieve(MODEL_URL, tmp.name)
         model = joblib.load(tmp.name)
@@ -49,8 +41,7 @@ def recommend_top_10(filtered_df, model):
     y_actual = filtered_df['RENT_PRICE']
 
     # Clean: remove inf and NaN values
-    X_filtered = X_filtered.replace([np.inf, -np.inf], np.nan)
-    X_filtered = X_filtered.dropna()
+    X_filtered = X_filtered.replace([np.inf, -np.inf], np.nan).dropna()
     y_actual = y_actual.loc[X_filtered.index]
 
     if X_filtered.empty:
@@ -65,7 +56,6 @@ def recommend_top_10(filtered_df, model):
 
     return top_df.reset_index(drop=True)
 
-# Main function to call from backend
 def get_recommendations(filters):
     df = load_data()
     model = load_model()
