@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import joblib  # or pickle
+import pickle
 from sklearn.ensemble import RandomForestRegressor
 import urllib.request
 import tempfile
